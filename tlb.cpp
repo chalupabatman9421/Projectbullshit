@@ -1,15 +1,15 @@
 //
 //
 //
-//
+//Justin Hahn
 //
 //
 
 #include "tlb.hpp"
 
-// Outputs the display addresses with their virtual/physical address and value
-int displayAddresses(bool displayAddrChoice, int count, logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList) {
-    if (displayAddrChoice == true) {
+// Outputs the display addresses 
+int displayAddresses(bool choiceForDisplay, int count, logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList) {
+    if (choiceForDisplay == true) {
         for (int i = 0; i < count; i++) {
             cout << "Virtual Address: " << logicAddrList[i] << "; Physical Address: " << physAddrList[i] << "; Value: " << (int) valueList[i] << endl;
         }
@@ -18,8 +18,8 @@ int displayAddresses(bool displayAddrChoice, int count, logicAddressList_t logic
     return 0;
 }
 
-// Reads out the value from the physical memory location
-int readPhysicalMemory (physicalAddress_t p_addr, frame physical_memory[NUM_FRAMES], value_t *value) {
+// look at physical mem to read 
+int physMemRead (physicalAddress_t p_addr, frame physical_memory[NUM_FRAMES], value_t *value) {
     int offset = p_addr % FRAME_SIZE;
     int row = p_addr / FRAME_SIZE;
 
@@ -29,8 +29,8 @@ int readPhysicalMemory (physicalAddress_t p_addr, frame physical_memory[NUM_FRAM
     return 0;
 }
 
-// Inserts the physical addresses and corresponding values into the arrays for later use
-int update_all_lists(physicalAddress_t physAddress, value_t value, physAddressList_t *physAddressList, valueList_t *valueList) {
+// Inserts the physical addresses 
+int updateLists(physicalAddress_t physAddress, value_t value, physAddressList_t *physAddressList, valueList_t *valueList) {
 
     physAddressList->push_back(physAddress);
     valueList->push_back(value);
@@ -38,9 +38,12 @@ int update_all_lists(physicalAddress_t physAddress, value_t value, physAddressLi
     return 0;
 }
 
-// Outputs all lists to the output file 'vm_sim_output.txt'
-int output_all_lists(logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList, int count) {
+
+
+
+int writeToOutput(logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList, int count) {
     ofstream file;
+	
     file.open("vm_sim_output.txt");
     for (int i = 0; i < count; i++) {
         file << "Virtual Address: " << logicAddrList[i] << "; Physical Address: " << physAddrList[i] << "; Value: " << (int) valueList[i] << endl;
@@ -50,8 +53,9 @@ int output_all_lists(logicAddressList_t logicAddrList, physAddressList_t physAdd
     return 0;
 }
 
-// Opens the input file and pushes each of the logical addresses into an array
-int logicAdrrLoader(string fileName, vector<literalAdd_t> * logicAddrList) {
+
+
+int lgcAddressMaker(string fileName, vector<literalAdd_t> * logicAddrList) {
     int count = 0;
     ifstream instream(fileName);
     if (instream.fail()) {
@@ -69,14 +73,16 @@ int logicAdrrLoader(string fileName, vector<literalAdd_t> * logicAddrList) {
     return count;
 }
 
-// Converts the logical address into a page number and offset
-int extractLogicAddr(literalAdd_t address, tlbPageEntry_t * pageNum, offsetAmount_t * offset) {
+
+
+int grabLgcAddresses(literalAdd_t address, tlbPageEntry_t * pageNum, offsetAmount_t * offset) {
     *pageNum = address >> OFFSET_BITS;
+	
     *offset = address & OFFSET_MASK;
     return 0;
 }
 
-// Initializes the page table
+// Initialize pg tbl
 int initPageTable(pageTable_t pageTable) {
     for (int i = 0; i < NUM_PAGES; i++) {
         pageTable[i] = EMPTY_PAGE;
@@ -87,6 +93,7 @@ int initPageTable(pageTable_t pageTable) {
 // Initializes the TLB
 int TLB_init(tlb *tlb) {
     unsigned int i;
+	
     tlb->next_tlb_ptr = 0;
     for (i = 0; i < TLB_SIZE; i++)
         tlb->tlb_entry[i].valid = false;
@@ -94,8 +101,10 @@ int TLB_init(tlb *tlb) {
     return 0;
 }
 
+
+
 // Initializes the phyiscal memory
-int PhsyMemInit(frame physical_memory[NUM_FRAMES]){
+int initPhysicalMem(frame physical_memory[NUM_FRAMES]){
     for (int i = 0; i < NUM_PAGES; i++) {
         physical_memory[i].valid = false;
     }
@@ -104,7 +113,9 @@ int PhsyMemInit(frame physical_memory[NUM_FRAMES]){
 
 }
 
-// Searches through the TLB for the corresponding page number to get the page frame and determine a tlb hit
+
+
+
 int searchTLB(tlbPageEntry_t * pageNum, bool * isTlbHit, frame_t * frameNum, tlb * tlbSearch) {
     for (int i = 0; i < TLB_SIZE; i++) {
         if (tlbSearch->tlb_entry[i].valid && tlbSearch->tlb_entry[i].pageNum == *pageNum) {
@@ -117,7 +128,8 @@ int searchTLB(tlbPageEntry_t * pageNum, bool * isTlbHit, frame_t * frameNum, tlb
     return 0;
 }
 
-// Searcg the page table for the corresponding page number and get the frame number
+
+
 int searchPageTable(tlbPageEntry_t pageNum, bool * isPageFault, frame_t * frameNum, pageTable_t tlbPageEntry_table) {
     if (tlbPageEntry_table[pageNum] == EMPTY_PAGE) {
         *isPageFault = true;
@@ -128,7 +140,9 @@ int searchPageTable(tlbPageEntry_t pageNum, bool * isPageFault, frame_t * frameN
     return 0;
 }
 
-// Display the contents of the TLB
+
+
+
 int TLB_display(tlb * tlb) {
     for (int i = 0; i < TLB_SIZE; i++) {
         cout << "TLB entry " << i << ", page num: " << tlb->tlb_entry[i].pageNum
@@ -141,7 +155,9 @@ int TLB_display(tlb * tlb) {
     return 0;
 }
 
-// Loading from the BACKING_STORE into physical memory when necessary
+
+
+
 int load_frame_to_physical_memory(tlbPageEntry_t pageNum, const char *backingStoreFileName, frame physical_memory[NUM_FRAMES], frame_t *frameNum) {
     FILE *file = fopen(backingStoreFileName, "r");
     fpos_t pos;
@@ -155,11 +171,12 @@ int load_frame_to_physical_memory(tlbPageEntry_t pageNum, const char *backingSto
 
     else {
         fseek(file, pageNum * FRAME_SIZE, SEEK_SET);
-        //fgetpos(file, &pos);
+        //fgetpos(file, &pos); didn't work come back and look
         frame_t frame;
         for (frame = 0; frame < 256; frame++) {
-            //If the frame is empty
-            if (!physical_memory[frame].valid) {
+            
+            if (!physical_memory[frame].valid) 
+			{
                 physical_memory[frame].valid = true;
                 break;
             }
@@ -178,13 +195,17 @@ int load_frame_to_physical_memory(tlbPageEntry_t pageNum, const char *backingSto
     return 0;
 }
 
-// Creates the correct physical address based upon the frame number and offset
+
+
+
 int createPhysicalAddress(frame_t f_num, offsetAmount_t off, physicalAddress_t *physical_addr) {
     *physical_addr = f_num * FRAME_SIZE + off;
     return 0;
 }
 
-// Implementation of the TLB FIFO replacement algorithm
+
+
+
 int TLB_replacement_FIFO(tlbPageEntry_t pageNum, frame_t frameNum, tlb *tlb) {
     for (int i = 0; i < TLB_SIZE; i++) {
         // If the tlb isn't full yet
@@ -210,7 +231,8 @@ int TLB_replacement_FIFO(tlbPageEntry_t pageNum, frame_t frameNum, tlb *tlb) {
     return 0;
 }
 
-// Implementation of the TLB LRU replacement algorithm
+
+
 int TLB_replacement_LRU(tlbPageEntry_t pageNum, frame_t frameNum, tlb *tlb) {
     for (int i = 0; i < TLB_SIZE; i++) {
         // If the tlb isn't full yet
@@ -221,20 +243,20 @@ int TLB_replacement_LRU(tlbPageEntry_t pageNum, frame_t frameNum, tlb *tlb) {
             return 0;
         }
     }
-    // Find the oldest tlb
-    int oldestAge = 0;
-    int oldestIndex = 0;
+    // Find the oldest
+    int oldAge = 0;
+    int indexOfOldest = 0;
     for (int i = 0; i < TLB_SIZE; i++) {
-        if (oldestAge < tlb->tlb_entry[i].age) {
-            oldestAge = tlb->tlb_entry[i].age;
-            oldestIndex = i;
+        if (oldAge < tlb->tlb_entry[i].age) {
+            oldAge = tlb->tlb_entry[i].age;
+            indexOfOldest = i;
         }
     }
-    // Replace the oldest tlb
-    tlb->tlb_entry[oldestIndex].pageNum = pageNum;
-    tlb->tlb_entry[oldestIndex].frameNum = frameNum;
-    tlb->tlb_entry[oldestIndex].age = 0;
-    tlb->tlb_entry[oldestIndex].valid = true;
+    // Replace the oldest
+    tlb->tlb_entry[indexOfOldest].pageNum = pageNum;
+    tlb->tlb_entry[indexOfOldest].frameNum = frameNum;
+    tlb->tlb_entry[indexOfOldest].age = 0;
+    tlb->tlb_entry[indexOfOldest].valid = true;
 
 
     return 0;
