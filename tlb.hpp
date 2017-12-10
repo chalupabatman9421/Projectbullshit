@@ -2,8 +2,7 @@
 //  tlb.hpp
 //  COMP3500_Project5_TLB
 //
-//  Created by Robby Lagen on 12/3/16.
-//  Copyright © 2016 Robby Lagen. All rights reserved.
+//  Justin Hahn
 //
 
 #ifndef tlb_hpp
@@ -67,11 +66,11 @@ typedef struct {
 //typedef frame physical_memory_t[NUM_FRAMES];
 typedef frame_t pageTable_t[NUM_PAGES];
 
-int logicAdrrLoader(string fileName, vector<literalAdd_t> * logicAddrList);
-int extractLogicAddr(literalAdd_t address, tlbPageEntry_t * pageNum, offsetAmount_t * offset);
+int lgcAddressMaker(string fileName, vector<literalAdd_t> * logicAddrList);
+int grabLgcAddresses(literalAdd_t address, tlbPageEntry_t * pageNum, offsetAmount_t * offset);
 int initPageTable(pageTable_t pageTable);
 int TLB_init(tlb *tlb);
-int PhsyMemInit(frame physical_memory[NUM_FRAMES]);
+int initPhysicalMem(frame physical_memory[NUM_FRAMES]);
 int searchTLB(tlbPageEntry_t * pageNum, bool * isTlbHit, frame_t * frameNum, tlb * tlbSearch);
 int searchPageTable(tlbPageEntry_t pageNum, bool * isPageFault, frame_t * frameNum, pageTable_t tlbPageEntry_table);
 int handlePageFault(tlbPageEntry_t p_num, frame_t *frame_num, frame physical_memory[NUM_FRAMES], pageTable_t p_table, tlb tlb);
@@ -79,9 +78,9 @@ int load_frame_to_physical_memory(tlbPageEntry_t pageNum, const char *backingSto
 int createPhysicalAddress(frame_t f_num, offsetAmount_t off, physicalAddress_t *physical_addr);
 int TLB_replacement_FIFO(tlbPageEntry_t pageNum, frame_t frameNum, tlb *tlb);
 int TLB_replacement_LRU(tlbPageEntry_t pageNum, frame_t frameNum, tlb *tlb);
-int readPhysicalMemory (physicalAddress_t p_addr, frame physical_memory[NUM_FRAMES], value_t *value);
-int update_all_lists(physicalAddress_t physAddress, value_t value, physAddressList_t *physAddressList, valueList_t *valueList);
-int output_all_lists(logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList, int count);
+int physMemRead (physicalAddress_t p_addr, frame physical_memory[NUM_FRAMES], value_t *value);
+int updateLists(physicalAddress_t physAddress, value_t value, physAddressList_t *physAddressList, valueList_t *valueList);
+int writeToOutput(logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList, int count);
 int displayAddresses(bool displayAddress, int count, logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList);
 
 #endif /* tlb_hpp */
