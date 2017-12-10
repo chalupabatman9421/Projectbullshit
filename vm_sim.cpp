@@ -100,19 +100,19 @@ int main() {
  
     TLB_init(&tlb);
     initPageTable(pageTable);
-    PhsyMemInit(physical_memory);
+    initPhysicalMem(physical_memory);
 
     
     double numOfPageFlts = 0;
     double smackDaTLB = 0;
 
     
-    int count = logicAdrrLoader(input_file, &logicAddressList);
+    int count = lgcAddressMaker(input_file, &logicAddressList);
 
 
     for (int i = 0; i < count; i++) {
       
-        extractLogicAddr(logicAddressList[i], &pageNum, &offset);
+        grabLgcAddresses(logicAddressList[i], &pageNum, &offset);
 
 
         // look at the TLB
@@ -166,15 +166,15 @@ int main() {
 
 
         
-        readPhysicalMemory(physicalAddress, physical_memory, &value);
+        physMemRead(physicalAddress, physical_memory, &value);
 
        
-        update_all_lists(physicalAddress, value, &physAddressList, &valueList);
+        updateLists(physicalAddress, value, &physAddressList, &valueList);
     } 
 
 
     // Sends everything to the output file
-    output_all_lists(logicAddressList, physAddressList, valueList, count);
+    writeToOutput(logicAddressList, physAddressList, valueList, count);
     displayAddresses(addressestoDisplay, count, logicAddressList, physAddressList, valueList);
     double pageFaultPercent = (numOfPageFlts / count) * 100;
     double tlbHitPercent = (smackDaTLB / count) * 100;
