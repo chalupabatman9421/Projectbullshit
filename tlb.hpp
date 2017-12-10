@@ -82,6 +82,6 @@ int TLB_replacement_LRU(page_t pageNum, frame_t frameNum, tlb *tlb);
 int readPhysicalMemory (paddress_t p_addr, frame physical_memory[NUM_FRAMES], value_t *value);
 int update_all_lists(paddress_t physAddress, value_t value, physAddressList_t *physAddressList, valueList_t *valueList);
 int output_all_lists(logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList, int count);
-int displayAddresses(bool displayAddrChoice, int count, logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList);
+int displayAddresses(bool displayAddress, int count, logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList);
 
 #endif /* tlb_hpp */
