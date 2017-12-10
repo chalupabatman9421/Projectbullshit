@@ -52,15 +52,15 @@ int main() {
     }
 
 
-    page_t pageNum;
-    frame_t frameNum;
-    offset_t offset;
+    page_on_table pageNum;
+    value_on_table frameNum;
+    amountToBeOffSet offset;
 
 
     // Addresses
-    laddress_t logicAddress;
-    paddress_t physicalAddress;
-    value_t value;
+    logicaddresholder logicAddress;
+    physicaladdressholder physicalAddress;
+    value_A value;
 
 
     // The TLB and page table
@@ -75,7 +75,7 @@ int main() {
 
     // Simulated main memory
     frame physical_memory[NUM_FRAMES];
-    //physical_memory_t physical_memory;
+    //physicalMemArray physical_memory;
 
 
     // Address Lists
