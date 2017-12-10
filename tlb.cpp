@@ -1,9 +1,8 @@
 //
-//  tlb.cpp
-//  COMP3500_Project5_TLB
 //
-//  Created by Robby Lagen on 12/3/16.
-//  Copyright © 2016 Robby Lagen. All rights reserved.
+//
+//
+//
 //
 
 #include "tlb.hpp"
