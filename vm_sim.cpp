@@ -1,13 +1,5 @@
-// VirtualMemoryManager.cpp : Defines the entry point for the console application.
-//
-
 #include "tlb.hpp"
 
-/*
- * In C language, there is no binary format in printf
- * You must implement the following functions to print binary format
- * itob16() and itob8() are modified from itob() by Xiao Qin.
- */
 char *itob(int x);
 char *itob16(int x);
 char *itob8(int x);

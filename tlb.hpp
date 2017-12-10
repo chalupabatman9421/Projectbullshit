@@ -2,8 +2,8 @@
 //  tlb.hpp
 //  COMP3500_Project5_TLB
 //
-//  Created by Robby Lagen on 12/3/16.
-//  Copyright © 2016 Robby Lagen. All rights reserved.
+//  Created by Justin Hahn.
+//  Copyright © 2016 Justin Hahn. All rights reserved.
 //
 
 #ifndef tlb_hpp
