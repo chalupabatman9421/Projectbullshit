@@ -1,15 +1,14 @@
 //
-//  tlb.cpp
-//  COMP3500_Project5_TLB
+//  
+//  
 //
-//  Created by Robby Lagen on 12/3/16.
-//  Copyright © 2016 Robby Lagen. All rights reserved.
+//  
 //
 
 #include "tlb.hpp"
 
-int displayAddresses(bool displayAddrChoice, int count, logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList) {
-    if (displayAddrChoice == true) {
+int displayAddresses(bool displayAddress, int count, logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList) {
+    if (displayAddress == true) {
         for (int i = 0; i < count; i++) {
             cout << "Virtual Address: " << logicAddrList[i] << "; Physical Address: " << physAddrList[i] << "; Value: " << (int) valueList[i] << endl;
         }
