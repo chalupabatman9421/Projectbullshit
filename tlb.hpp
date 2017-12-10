@@ -2,8 +2,7 @@
 //  tlb.hpp
 //  COMP3500_Project5_TLB
 //
-//  Created by Robby Lagen on 12/3/16.
-//  Copyright © 2016 Robby Lagen. All rights reserved.
+//  Justin Hahn
 //
 
 #ifndef tlb_hpp
@@ -34,20 +33,21 @@ using namespace std;
 typedef unsigned char byte;
 
 /* new data type of pages, frames, and offset */
-typedef unsigned int page_t;
-typedef char value_t;
-typedef unsigned int frame_t;
-typedef unsigned int offset_t;
-typedef unsigned int laddress_t;
-typedef unsigned int paddress_t;
-typedef char physical_memory_t[NUM_FRAMES][PAGE_SIZE];
-typedef vector<laddress_t> logicAddressList_t;
-typedef vector<paddress_t> physAddressList_t;
+typedef unsigned int page_on_table;
+typedef unsigned int physicaladdressholder;
+typedef vector<physicaladdressholder> physAddressList_t;
+typedef char physicalMemArray[NUM_FRAMES][PAGE_SIZE];
+typedef vector<logicaddresholder> logicAddressList_t;
+typedef char value_A;
+typedef unsigned int logicaddresholder;
 typedef vector<char> valueList_t;
+typedef unsigned int value_on_table;
+typedef unsigned int amountToBeOffSet;
+
 
 typedef struct {
-    page_t pageNum;
-    frame_t frameNum;
+    page_on_table pageNum;
+    value_on_table frameNum;
     bool valid;
     int age;
 } tlbEntry;
@@ -64,23 +64,23 @@ typedef struct {
     bool valid;
 } frame;
 
-//typedef frame physical_memory_t[NUM_FRAMES];
-typedef frame_t pageTable_t[NUM_PAGES];
+//typedef frame physicalMemArray[NUM_FRAMES];
+typedef value_on_table pageTable_t[NUM_PAGES];
 
-int logicAdrrLoader(string fileName, vector<laddress_t> * logicAddrList);
-int extractLogicAddr(laddress_t address, page_t * pageNum, offset_t * offset);
+int logicAdrrLoader(string fileName, vector<logicaddresholder> * logicAddrList);
+int extractLogicAddr(logicaddresholder address, page_on_table * pageNum, amountToBeOffSet * offset);
 int initPageTable(pageTable_t pageTable);
 int TLB_init(tlb *tlb);
 int PhsyMemInit(frame physical_memory[NUM_FRAMES]);
-int searchTLB(page_t * pageNum, bool * isTlbHit, frame_t * frameNum, tlb * tlbSearch);
-int searchPageTable(page_t pageNum, bool * isPageFault, frame_t * frameNum, pageTable_t page_Table);
-int handlePageFault(page_t p_num, frame_t *frame_num, frame physical_memory[NUM_FRAMES], pageTable_t p_table, tlb tlb);
-int load_frame_to_physical_memory(page_t pageNum, const char *backingStoreFileName, frame physical_memory[NUM_FRAMES], frame_t *frameNum);
-int createPhysicalAddress(frame_t f_num, offset_t off, paddress_t *physical_addr);
-int TLB_replacement_FIFO(page_t pageNum, frame_t frameNum, tlb *tlb);
-int TLB_replacement_LRU(page_t pageNum, frame_t frameNum, tlb *tlb);
-int readPhysicalMemory (paddress_t p_addr, frame physical_memory[NUM_FRAMES], value_t *value);
-int update_all_lists(paddress_t physAddress, value_t value, physAddressList_t *physAddressList, valueList_t *valueList);
+int searchTLB(page_on_table * pageNum, bool * isTlbHit, value_on_table * frameNum, tlb * tlbSearch);
+int searchPageTable(page_on_table pageNum, bool * isPageFault, value_on_table * frameNum, pageTable_t page_on_tableable);
+int handlePageFault(page_on_table p_num, value_on_table *frame_num, frame physical_memory[NUM_FRAMES], pageTable_t p_table, tlb tlb);
+int load_value_on_tableo_physical_memory(page_on_table pageNum, const char *backingStoreFileName, frame physical_memory[NUM_FRAMES], value_on_table *frameNum);
+int createPhysicalAddress(value_on_table f_num, amountToBeOffSet off, physicaladdressholder *physical_addr);
+int TLB_replacement_FIFO(page_on_table pageNum, value_on_table frameNum, tlb *tlb);
+int TLB_replacement_LRU(page_on_table pageNum, value_on_table frameNum, tlb *tlb);
+int readPhysicalMemory (physicaladdressholder p_addr, frame physical_memory[NUM_FRAMES], value_A *value);
+int update_all_lists(physicaladdressholder physAddress, value_A value, physAddressList_t *physAddressList, valueList_t *valueList);
 int output_all_lists(logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList, int count);
 int displayAddresses(bool displayAddress, int count, logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList);
 
