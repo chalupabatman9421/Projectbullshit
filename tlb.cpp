@@ -8,6 +8,7 @@
 
 #include "tlb.hpp"
 
+// Outputs the display addresses with their virtual/physical address and value
 int displayAddresses(bool displayAddrChoice, int count, logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList) {
     if (displayAddrChoice == true) {
         for (int i = 0; i < count; i++) {
@@ -18,6 +19,7 @@ int displayAddresses(bool displayAddrChoice, int count, logicAddressList_t logic
     return 0;
 }
 
+// Reads out the value from the physical memory location
 int readPhysicalMemory (paddress_t p_addr, frame physical_memory[NUM_FRAMES], value_t *value) {
     int offset = p_addr % FRAME_SIZE;
     int row = p_addr / FRAME_SIZE;
@@ -28,6 +30,7 @@ int readPhysicalMemory (paddress_t p_addr, frame physical_memory[NUM_FRAMES], va
     return 0;
 }
 
+// Inserts the physical addresses and corresponding values into the arrays for later use
 int update_all_lists(paddress_t physAddress, value_t value, physAddressList_t *physAddressList, valueList_t *valueList) {
 
     physAddressList->push_back(physAddress);
@@ -36,6 +39,7 @@ int update_all_lists(paddress_t physAddress, value_t value, physAddressList_t *p
     return 0;
 }
 
+// Outputs all lists to the output file 'vm_sim_output.txt'
 int output_all_lists(logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList, int count) {
     ofstream file;
     file.open("vm_sim_output.txt");
@@ -47,6 +51,7 @@ int output_all_lists(logicAddressList_t logicAddrList, physAddressList_t physAdd
     return 0;
 }
 
+// Opens the input file and pushes each of the logical addresses into an array
 int logicAdrrLoader(string fileName, vector<laddress_t> * logicAddrList) {
     int count = 0;
     ifstream instream(fileName);
@@ -65,13 +70,14 @@ int logicAdrrLoader(string fileName, vector<laddress_t> * logicAddrList) {
     return count;
 }
 
+// Converts the logical address into a page number and offset
 int extractLogicAddr(laddress_t address, page_t * pageNum, offset_t * offset) {
     *pageNum = address >> OFFSET_BITS;
     *offset = address & OFFSET_MASK;
     return 0;
 }
 
-// Page Table Initialization
+// Initializes the page table
 int initPageTable(pageTable_t pageTable) {
     for (int i = 0; i < NUM_PAGES; i++) {
         pageTable[i] = EMPTY_PAGE;
@@ -79,7 +85,7 @@ int initPageTable(pageTable_t pageTable) {
     return 0;
 }
 
-// TLB functions
+// Initializes the TLB
 int TLB_init(tlb *tlb) {
     unsigned int i;
     tlb->next_tlb_ptr = 0;
@@ -89,6 +95,7 @@ int TLB_init(tlb *tlb) {
     return 0;
 }
 
+// Initializes the phyiscal memory
 int PhsyMemInit(frame physical_memory[NUM_FRAMES]){
     for (int i = 0; i < NUM_PAGES; i++) {
         physical_memory[i].valid = false;
@@ -98,6 +105,7 @@ int PhsyMemInit(frame physical_memory[NUM_FRAMES]){
 
 }
 
+// Searches through the TLB for the corresponding page number to get the page frame and determine a tlb hit
 int searchTLB(page_t * pageNum, bool * isTlbHit, frame_t * frameNum, tlb * tlbSearch) {
     for (int i = 0; i < TLB_SIZE; i++) {
         if (tlbSearch->tlb_entry[i].valid && tlbSearch->tlb_entry[i].pageNum == *pageNum) {
@@ -110,6 +118,7 @@ int searchTLB(page_t * pageNum, bool * isTlbHit, frame_t * frameNum, tlb * tlbSe
     return 0;
 }
 
+// Searcg the page table for the corresponding page number and get the frame number
 int searchPageTable(page_t pageNum, bool * isPageFault, frame_t * frameNum, pageTable_t page_Table) {
     if (page_Table[pageNum] == EMPTY_PAGE) {
         *isPageFault = true;
@@ -120,6 +129,7 @@ int searchPageTable(page_t pageNum, bool * isPageFault, frame_t * frameNum, page
     return 0;
 }
 
+// Display the contents of the TLB
 int TLB_display(tlb * tlb) {
     for (int i = 0; i < TLB_SIZE; i++) {
         cout << "TLB entry " << i << ", page num: " << tlb->tlb_entry[i].pageNum
@@ -132,7 +142,7 @@ int TLB_display(tlb * tlb) {
     return 0;
 }
 
-// Loading from backingstore
+// Loading from the BACKING_STORE into physical memory when necessary
 int load_frame_to_physical_memory(page_t pageNum, const char *backingStoreFileName, frame physical_memory[NUM_FRAMES], frame_t *frameNum) {
     FILE *file = fopen(backingStoreFileName, "r");
     fpos_t pos;
@@ -169,11 +179,13 @@ int load_frame_to_physical_memory(page_t pageNum, const char *backingStoreFileNa
     return 0;
 }
 
+// Creates the correct physical address based upon the frame number and offset
 int createPhysicalAddress(frame_t f_num, offset_t off, paddress_t *physical_addr) {
     *physical_addr = f_num * FRAME_SIZE + off;
     return 0;
 }
 
+// Implementation of the TLB FIFO replacement algorithm
 int TLB_replacement_FIFO(page_t pageNum, frame_t frameNum, tlb *tlb) {
     for (int i = 0; i < TLB_SIZE; i++) {
         // If the tlb isn't full yet
@@ -199,6 +211,7 @@ int TLB_replacement_FIFO(page_t pageNum, frame_t frameNum, tlb *tlb) {
     return 0;
 }
 
+// Implementation of the TLB LRU replacement algorithm
 int TLB_replacement_LRU(page_t pageNum, frame_t frameNum, tlb *tlb) {
     for (int i = 0; i < TLB_SIZE; i++) {
         // If the tlb isn't full yet
@@ -228,6 +241,7 @@ int TLB_replacement_LRU(page_t pageNum, frame_t frameNum, tlb *tlb) {
     return 0;
 }
 
+// Handle a page fault
 int handlePageFault(page_t p_num, frame_t *frame_num, frame physical_memory[NUM_FRAMES], pageTable_t p_table, tlb tlb) {
     load_frame_to_physical_memory(p_num, "BACKING_STORE", physical_memory, frame_num);
     p_table[p_num] = *frame_num;
