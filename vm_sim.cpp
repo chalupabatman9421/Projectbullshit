@@ -1,5 +1,5 @@
 /*
-* VirtualMemoryManager.cpp : Defines the entry point for the console application.
+* vm_sim.cpp : Defines the entry point for the console application.
 * Source https://www.tutorialspoint.com/operating_system/os_virtual_memory.htm
 * http://www.geeksforgeeks.org/virtual-memory-operating-systems/
 * http://www.aqualab.cs.northwestern.edu/component/attachments/download/629
@@ -10,11 +10,6 @@
 
 #include "tlb.hpp"
 
-/*
- * In C language, there is no binary format in printf
- * You must implement the following functions to print binary format
- * itob16() and itob8() are modified from itob() by Xiao Qin.
- */
 char *itob(int x);
 char *itob16(int x);
 char *itob8(int x);
@@ -23,8 +18,8 @@ char *itob8(int x);
 bool addressestoDisplay;
 bool algoToUse;
 
-//The start of displaying 
-int main() {
+//The start of displaying
+int main(int argc, char** argv) {
     cout << "Welcome to Group Justin's VM Simulator Version 1.0\n\n"
     << "Number of logical pages: " << NUM_PAGES << endl
     << "Page size: " << PAGE_SIZE << " bytes" << endl
@@ -37,9 +32,9 @@ int main() {
     string choiceForDisplay;
 
 
-    cout << "Display physical addresses? [y or n] ";
+    cout << "Display physical addresses? [yes or no] ";
     cin >> choiceForDisplay;
-    if (choiceForDisplay == "y" || choiceForDisplay == "Y") {
+    if (choiceForDisplay == "yes" || choiceForDisplay == "Yes" || choiceForDisplay == "y" || choiceForDisplay == "Y") {
         addressestoDisplay = true;
     }
     else {
@@ -71,7 +66,7 @@ int main() {
     value_t value;
 
 
-    // The TLB 
+    // The TLB
     tlb tlb;
     pageTable_t pageTable;
 
@@ -83,7 +78,7 @@ int main() {
 
     // Simulated main memory
     frame physical_memory[NUM_FRAMES];
- 
+
 
 
     // Address Lists
@@ -91,29 +86,24 @@ int main() {
     logicAddressList_t logicAddressList;
     valueList_t valueList;
 
-
     // File Names
-    const char input_file[] = "InputFile.txt";
     const char backing_store_file_name[] = "BACKING_STORE";
 
 
- 
     TLB_init(&tlb);
     initPageTable(pageTable);
     initPhysicalMem(physical_memory);
 
-    
+
     double numOfPageFlts = 0;
     double smackDaTLB = 0;
 
-    
-    int count = lgcAddressMaker(input_file, &logicAddressList);
+    int count = lgcAddressMaker(string(argv[1]), &logicAddressList);
 
 
     for (int i = 0; i < count; i++) {
-      
-        grabLgcAddresses(logicAddressList[i], &pageNum, &offset);
 
+        grabLgcAddresses(logicAddressList[i], &pageNum, &offset);
 
         // look at the TLB
         searchTLB(&pageNum, &tlbHit, &frameNum, &tlb);
@@ -162,15 +152,15 @@ int main() {
 
                 createPhysicalAddress(frameNum, offset, &physicalAddress);
             }
-        } 
+        }
 
 
-        
+
         physMemRead(physicalAddress, physical_memory, &value);
 
-       
+
         updateLists(physicalAddress, value, &physAddressList, &valueList);
-    } 
+    }
 
 
     // Sends everything to the output file

@@ -18,7 +18,7 @@ int displayAddresses(bool choiceForDisplay, int count, logicAddressList_t logicA
     return 0;
 }
 
-// look at physical mem to read 
+// look at physical mem to read
 int physMemRead (physicalAddress_t p_addr, frame physical_memory[NUM_FRAMES], value_t *value) {
     int offset = p_addr % FRAME_SIZE;
     int row = p_addr / FRAME_SIZE;
@@ -29,7 +29,7 @@ int physMemRead (physicalAddress_t p_addr, frame physical_memory[NUM_FRAMES], va
     return 0;
 }
 
-// Inserts the physical addresses 
+// Inserts the physical addresses
 int updateLists(physicalAddress_t physAddress, value_t value, physAddressList_t *physAddressList, valueList_t *valueList) {
 
     physAddressList->push_back(physAddress);
@@ -43,7 +43,7 @@ int updateLists(physicalAddress_t physAddress, value_t value, physAddressList_t 
 
 int writeToOutput(logicAddressList_t logicAddrList, physAddressList_t physAddrList, valueList_t valueList, int count) {
     ofstream file;
-	
+
     file.open("vm_sim_output.txt");
     for (int i = 0; i < count; i++) {
         file << "Virtual Address: " << logicAddrList[i] << "; Physical Address: " << physAddrList[i] << "; Value: " << (int) valueList[i] << endl;
@@ -77,7 +77,7 @@ int lgcAddressMaker(string fileName, vector<literalAdd_t> * logicAddrList) {
 
 int grabLgcAddresses(literalAdd_t address, tlbPageEntry_t * pageNum, offsetAmount_t * offset) {
     *pageNum = address >> OFFSET_BITS;
-	
+
     *offset = address & OFFSET_MASK;
     return 0;
 }
@@ -93,7 +93,7 @@ int initPageTable(pageTable_t pageTable) {
 // Initializes the TLB
 int TLB_init(tlb *tlb) {
     unsigned int i;
-	
+
     tlb->next_tlb_ptr = 0;
     for (i = 0; i < TLB_SIZE; i++)
         tlb->tlb_entry[i].valid = false;
@@ -174,8 +174,8 @@ int load_frame_to_physical_memory(tlbPageEntry_t pageNum, const char *backingSto
         //fgetpos(file, &pos); didn't work come back and look
         frame_t frame;
         for (frame = 0; frame < 256; frame++) {
-            
-            if (!physical_memory[frame].valid) 
+
+            if (!physical_memory[frame].valid)
 			{
                 physical_memory[frame].valid = true;
                 break;
