@@ -1,5 +1,12 @@
-// VirtualMemoryManager.cpp : Defines the entry point for the console application.
-//
+/*
+* VirtualMemoryManager.cpp : Defines the entry point for the console application.
+* Source https://www.tutorialspoint.com/operating_system/os_virtual_memory.htm
+* http://www.geeksforgeeks.org/virtual-memory-operating-systems/
+* http://www.aqualab.cs.northwestern.edu/component/attachments/download/629
+* https://www2.cs.uic.edu/~jbell/CourseNotes/OperatingSystems/9_VirtualMemory.html
+*
+*
+*/
 
 #include "tlb.hpp"
 
@@ -13,11 +20,12 @@ char *itob16(int x);
 char *itob8(int x);
 
 // Flags used to determine user's choice
-bool willDisplayAddr;
-bool willUseFIFO;
+bool addressestoDisplay;
+bool algoToUse;
 
+//The start of displaying 
 int main() {
-    cout << "Welcome to Group 1's VM Simulator Version 1.0\n\n"
+    cout << "Welcome to Group Justin's VM Simulator Version 1.0\n\n"
     << "Number of logical pages: " << NUM_PAGES << endl
     << "Page size: " << PAGE_SIZE << " bytes" << endl
     << "Page table size: " << NUM_FRAMES << endl
@@ -26,29 +34,29 @@ int main() {
     << "Physical memory size: 65,536 bytes\n\n";
 
 
-    string displayAddrChoice;
+    string choiceForDisplay;
 
 
     cout << "Display physical addresses? [y or n] ";
-    cin >> displayAddrChoice;
-    if (displayAddrChoice == "y" || displayAddrChoice == "Y") {
-        willDisplayAddr = true;
+    cin >> choiceForDisplay;
+    if (choiceForDisplay == "y" || choiceForDisplay == "Y") {
+        addressestoDisplay = true;
     }
     else {
-        willDisplayAddr = false;
+        addressestoDisplay = false;
     }
 
 
-    int strategyChoice;
+    int choiceForStrat;
 
 
     cout << "Choose TLB Replacement Strategy [1: FIFO, 2: LRU] ";
-    cin >> strategyChoice;
-    if (strategyChoice == 1) {
-        willUseFIFO = true;
+    cin >> choiceForStrat;
+    if (choiceForStrat == 1) {
+        algoToUse = true;
     }
     else {
-        willUseFIFO = false;
+        algoToUse = false;
     }
 
 
@@ -63,7 +71,7 @@ int main() {
     value_t value;
 
 
-    // The TLB and page table
+    // The TLB 
     tlb tlb;
     pageTable_t pageTable;
 
@@ -75,7 +83,7 @@ int main() {
 
     // Simulated main memory
     frame physical_memory[NUM_FRAMES];
-    //physical_memory_t physical_memory;
+ 
 
 
     // Address Lists
@@ -89,30 +97,30 @@ int main() {
     const char backing_store_file_name[] = "BACKING_STORE";
 
 
-    // Initialize the tlb and page table
+ 
     TLB_init(&tlb);
     initPageTable(pageTable);
     PhsyMemInit(physical_memory);
 
-    // page fault and tlb hit counter
-    double amountPageFaults = 0;
-    double amountTLBHits = 0;
+    
+    double numOfPageFlts = 0;
+    double smackDaTLB = 0;
 
-    // Load the logical addresses from the test file
+    
     int count = logicAdrrLoader(input_file, &logicAddressList);
 
 
     for (int i = 0; i < count; i++) {
-        // Get a logical address, its pageNum, and offset
+      
         extractLogicAddr(logicAddressList[i], &pageNum, &offset);
 
 
-        // Search the TLB
+        // look at the TLB
         searchTLB(&pageNum, &tlbHit, &frameNum, &tlb);
 
 
         if (tlbHit == true) {
-            amountTLBHits++;
+            smackDaTLB++;
             createPhysicalAddress(frameNum, offset, &physicalAddress);
         }
 
@@ -128,7 +136,7 @@ int main() {
 
 
                 // TLB replacement methods
-                if (willUseFIFO == true) {
+                if (algoToUse == true) {
                     TLB_replacement_FIFO(pageNum, frameNum, &tlb);
                 }
                 else {
@@ -139,12 +147,12 @@ int main() {
 
             // Page Fault
             else {
-                amountPageFaults++;
+                numOfPageFlts++;
                 handlePageFault(pageNum, &frameNum, physical_memory, pageTable, tlb);
 
 
-                // TLB replacement methods
-                if (willUseFIFO == true) {
+                // determine the replacement methods
+                if (algoToUse == true) {
                     TLB_replacement_FIFO(pageNum, frameNum, &tlb);
                 }
                 else {
@@ -154,22 +162,22 @@ int main() {
 
                 createPhysicalAddress(frameNum, offset, &physicalAddress);
             }
-        } // End of TLB Miss
+        } 
 
 
-        // Read one-byte value from the physical memory
+        
         readPhysicalMemory(physicalAddress, physical_memory, &value);
 
-        // Update the address lists
+       
         update_all_lists(physicalAddress, value, &physAddressList, &valueList);
-    } // End of logicAddrList
+    } 
 
 
-    // Output and display the address lists into an output file
+    // Sends everything to the output file
     output_all_lists(logicAddressList, physAddressList, valueList, count);
-    displayAddresses(willDisplayAddr, count, logicAddressList, physAddressList, valueList);
-    double pageFaultPercent = (amountPageFaults / count) * 100;
-    double tlbHitPercent = (amountTLBHits / count) * 100;
+    displayAddresses(addressestoDisplay, count, logicAddressList, physAddressList, valueList);
+    double pageFaultPercent = (numOfPageFlts / count) * 100;
+    double tlbHitPercent = (smackDaTLB / count) * 100;
 
     cout << "\nPage Fault Rate: " << pageFaultPercent << "%"
     << "\nTLB Hit Rate: " << tlbHitPercent << "%\n\n"
